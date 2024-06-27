@@ -26,6 +26,10 @@ class Shop:
 
         self.shop.show_menu()
 
+    def buy_item(player, item, price):
+        player.give_gold(-price)
+        player.give_item(item)
+
     def make_shop_item(self, item: Object, price: int, player: Player):
         def buy_item():
             if player.gold < price:
@@ -43,8 +47,7 @@ class Shop:
 
             @confirmation.command("Yes")
             def confirm_buy():
-                player.give_gold(-price)
-                player.give_item(item)
+                self.buy_item(player, item, price)
                 self.shop.rm_command(f"{item.name} - ${price}")
                 print("Returning to shop")
                 self.shop.show_menu()
