@@ -19,7 +19,7 @@ Do you want to pick them?""")
 @flower_patch.command("Pick them")
 def pick_flowers():
     print("You pick the flowers")
-    flowers = Object("flowers x5")
+    flowers = Object("flowers", 5)
     player.give_item(flowers)
 
     flower_patch.rm_command("Pick them")
@@ -68,5 +68,13 @@ def dont_take_it():
     print("You return back to the middle of the meadow")
     middle_meadow.show_menu()
 
+
+@Environment.global_command("Inventory")
+def view_inventory():
+    print(player.inventory.format())
+
+@Environment.global_command("HP")
+def view_hp():
+    print(f"HP: {player.calc_hp()}")
 
 middle_meadow.show_menu()

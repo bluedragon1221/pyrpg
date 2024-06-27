@@ -3,8 +3,6 @@ from lib.character import Player
 from lib.container import Weapon
 from lib.environment import Environment
 
-from result import Ok
-
 player = Player("Collin")
 player.give_gold(200)
 

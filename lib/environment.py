@@ -1,8 +1,22 @@
 import questionary
-from result import Result, Ok, Err
+from typing import Dict, Callable
 
+def exec_picker(commands: Dict[str, Callable]):
+        choices = commands.keys()
+        action = questionary.select(
+            message="", choices=choices, instruction=" ", qmark="", pointer=">"
+        ).ask()
+
+        if not action:
+            raise Exception("Picker failed")
+        elif action in commands:
+            commands[action]()
+        else:
+            raise Exception(f"There is no command with the name {action}")
 
 class Environment:
+    global_commands = {}
+
     def __init__(self, name):
         self.name = name
         self.commands = {}
@@ -14,32 +28,42 @@ class Environment:
 
         return decorator
 
-    def add_command(self, trigger: str, action) -> None:
+    def add_command(self, trigger: str, action):
         self.commands[trigger] = action
 
-    def rm_command(self, trigger: str) -> Result[None, str]:
+    def rm_command(self, trigger: str):
         if trigger in self.commands:
             del self.commands[trigger]
-            return Ok(None)
         else:
-            return Err(f"There is no command with the name {trigger}")
+            raise Exception(f"There is no command with the name {trigger}")
 
-    def show_menu(self, msg="") -> Result[None, str]:
-        print(self.text)
-        choices = self.commands.keys()
-        action = questionary.select(
-            message=msg, choices=choices, instruction=" ", qmark="", pointer=">"
-        ).ask()
+    def show_menu(self, intro=True):
+        if len(Environment.global_commands) != 0:
+            def open_global_picker():
+                exec_picker(Environment.global_commands)
+                self.show_menu(False)
 
-        if not action:
-            return Err("The action failed to execute")
-        elif action in self.commands:
-            return Ok(self.commands[action]())
+            new_commands = self.commands | {"Command": open_global_picker}
         else:
-            return Err(f"There is no command with the name {action}")
+            new_commands = self.commands
+        
+        if intro:
+            print(self.text)
+        exec_picker(new_commands)
 
     def set_text(self, text: str):
         self.text = text
 
     def get_text(self):
         return self.text
+
+    @staticmethod
+    def add_global_command(trigger: str, action):
+        Environment.global_commands[trigger] = action
+
+    @staticmethod
+    def global_command(trigger: str):
+        def decorator(func):
+            Environment.add_global_command(trigger, func)
+
+        return decorator

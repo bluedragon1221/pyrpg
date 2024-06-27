@@ -2,17 +2,24 @@ from typing import List, Iterator
 
 
 class Object:
-    def __init__(self, name: str):
+    def __init__(self, name: str, count=1):
         self.name = name
         self.weight = 0
         self.description = ""
         self.price = 0
+        self.count = count
 
     def set_description(self, txt: str):
         self.description = txt
 
     def get_description(self):
         return self.description
+
+    def format(self):
+        if self.count > 1:
+            return f"{self.name} x{self.count}"
+        else:
+            return self.name
 
 
 class Weapon(Object):
@@ -44,3 +51,10 @@ class Container:
     def extend(self, items: List[Object]) -> None:
         for item in items:
             self.add(item)
+
+    def format(self):
+        ret = f"{self.name}:\n"
+        for i in self.items:
+            ret+=f"- {i.format()}\n"
+
+        return ret

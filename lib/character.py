@@ -60,7 +60,7 @@ class Character:
 class Player(Character):
     def __init__(self, name: str):
         super().__init__(name, Race.HUMAN)
-        self.inventory = Container("inventory")
+        self.inventory = Container("Inventory")
         self.gold = 80
 
     def give_item(self, item: Object) -> None:
