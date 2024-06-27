@@ -3,17 +3,19 @@ from enum import Enum
 
 from random import randint
 
+
 class Race(Enum):
     NONE = "none"
-    DRAGONBORN = "dragonborn" 
-    DWARF = "dwarf" 
-    ELF = "elf" 
-    GNOME = "gnome" 
-    HALFELF = "half-elf" 
-    HALFLING = "halfling" 
-    HALFORC = "half-orc" 
-    HUMAN = "human" 
-    TIEFLING = "tiefling" 
+    DRAGONBORN = "dragonborn"
+    DWARF = "dwarf"
+    ELF = "elf"
+    GNOME = "gnome"
+    HALFELF = "half-elf"
+    HALFLING = "halfling"
+    HALFORC = "half-orc"
+    HUMAN = "human"
+    TIEFLING = "tiefling"
+
 
 class Character:
     def __init__(self, name: str, race: Race):
@@ -34,7 +36,7 @@ class Character:
         self.hp = self.max_hp
 
     def do_damage(self, amount: int):
-        self.hp 
+        self.hp
 
     def equip_armor(self, armor: Armor):
         self.armor = armor
@@ -54,12 +56,13 @@ class Character:
     def calc_hp(self):
         return self.hp
 
+
 class Player(Character):
     def __init__(self, name: str):
         super().__init__(name, Race.HUMAN)
         self.inventory = Container("inventory")
         self.gold = 80
-    
+
     def give_item(self, item: Object) -> None:
         self.inventory.add(item)
 
@@ -71,4 +74,3 @@ class Player(Character):
 
     def give_gold(self, amount: int) -> None:
         self.gold += amount
-

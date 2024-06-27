@@ -1,46 +1,59 @@
 from lib.environment import Environment
 from lib.character import Player
 from lib.container import Object
+from typing import Dict
+
 
 class Shop:
-    def __init__(self, name: str, items: list[Object]):
+    def __init__(self, name: str, items: Dict[Object, int]):
         self.name = name
-        self.items = items
+        self.items: Dict[Object, int] = items
+        self.shop = Environment(self.name)
 
     def start_shop(self, player: Player):
-        shop = Environment(self.name)
-        shop.set_text(f"Welcome to {self.name}. What would you like to buy?")
+        print(self.items)
+        self.shop.set_text(f"Welcome to {self.name}. What would you like to buy?")
 
-        for item in self.items:
-            command_name = f"{item.name} - ${item.price}"
-            @shop.command(command_name)
-            def buy_item():
-                if player.gold < item.price:
-                    print(f"You can't afford {item.name}. It costs {item.price} gold, but you only have {player.gold}.")
-                    print("returning to shop")
-                    shop.show_menu()
+        for item, price in self.items.items():
+            command_name = f"{item.name} - ${price}"
+            self.shop.add_command(
+                command_name, self.make_shop_item(item, price, player)
+            )
 
-                confirmation = Environment("confirm purchase")
-                confirmation.set_text(f"Are you sure you want to buy this item?\n{item.format()}")
-
-                @confirmation.command("Yes")
-                def confirm_buy():
-                    player.give_gold(-item.price)
-                    player.give_item(item)
-                    shop.rm_command(command_name)
-                    print("Returning to shop")
-                    shop.show_menu()
-
-                @confirmation.command("No, return to shop")
-                def cancel_buy():
-                    print("Return to shop")
-                    shop.show_menu()
-
-                confirmation.show_menu()
-
-        @shop.command("Exit")
+        @self.shop.command("Exit")
         def exit_shop():
             print(f"Thank you for shopping at {self.name}. Have a nice day!")
 
-        shop.show_menu()
+        self.shop.show_menu()
 
+    def make_shop_item(self, item: Object, price: int, player: Player):
+        def buy_item():
+            if player.gold < price:
+                print(
+                    f"You can't afford {item.name}. It costs {price} gold, but you only have {player.gold}."
+                )
+                print("returning to shop")
+                self.shop.show_menu()
+
+            confirmation = Environment("confirm purchase")
+            confirmation.set_text(f"""Are you sure you want to buy this item?
+    Name: {item.name}
+    Description: {item.description}
+    Price: {price}""")
+
+            @confirmation.command("Yes")
+            def confirm_buy():
+                player.give_gold(-price)
+                player.give_item(item)
+                self.shop.rm_command(f"{item.name} - ${price}")
+                print("Returning to shop")
+                self.shop.show_menu()
+
+            @confirmation.command("No, return to shop")
+            def cancel_buy():
+                print("Return to shop")
+                self.shop.show_menu()
+
+            confirmation.show_menu()
+
+        return buy_item
