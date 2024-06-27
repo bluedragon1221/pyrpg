@@ -1,11 +1,11 @@
 from typing import List, Iterator
 
 class Object:
-    def __init__(self, name: str, weight: int, price: int):
+    def __init__(self, name: str):
         self.name = name
-        self.weight = weight
+        self.weight = 0
         self.description = ""
-        self.price = price
+        self.price = 0
 
     def set_description(self, txt: str):
         self.description = txt
@@ -15,8 +15,8 @@ class Object:
 
 
 class Weapon(Object):
-    def __init__(self, name: str, weight: int, price: int, damage: int):
-        super().__init__(name, weight, price)
+    def __init__(self, name: str, damage: int):
+        super().__init__(name)
         self.damage = damage
 
     def format(self):
@@ -26,8 +26,8 @@ class Weapon(Object):
 
 
 class Armor(Object):
-    def __init__(self, name: str, weight: int, price: int, ac: int):
-        super().__init__(name, weight, price)
+    def __init__(self, name: str, ac: int):
+        super().__init__(name)
         self.ac_bonus = ac
 
 class Container:
