@@ -1,5 +1,6 @@
 from typing import List, Iterator
 
+from random import randint
 
 class Object:
     def __init__(self, name: str, count=1):
@@ -23,9 +24,14 @@ class Object:
 
 
 class Weapon(Object):
-    def __init__(self, name: str, damage: int):
+    def __init__(self, name: str, die: int):
         super().__init__(name)
-        self.damage = damage
+        if die not in [1, 4, 6, 8, 10, 12, 20]:
+            raise Exception(f"{die} is not a valid die.")
+        self.damage_die = die
+
+    def roll_die(self):
+        return randint(1, self.damage_die)
 
 
 class Armor(Object):
@@ -39,11 +45,28 @@ class Container:
         self.name = name
         self.items: List[Object] = []
 
+    def as_list(self):
+        return self.items
+
     def __iter__(self) -> Iterator[Object]:
         return iter(self.items)
 
-    def remove(self, item_name: str) -> None:
-        self.items = [item for item in self.items if item.get_name() != item_name]
+    def txt_list(self) -> list[str]:
+        return [item.name for item in self.items]
+
+    def remove(self, item_to_remove: Object) -> None:
+        new_list = [item for item in self.items if item != item_to_remove]
+
+        if self.items == new_list:
+            raise Exception(f"{item_to_remove} is not in {self.name}")
+        else:
+            self.items = new_list
+
+    def find(self, item_name: str) -> Object:
+        if item_name not in self.txt_list():
+            raise Exception(f"{item_name} is not in {self.name}")
+        else:
+            return [item for item in self.items if item.name == item_name][0]
 
     def add(self, item: Object) -> None:
         self.items.append(item)

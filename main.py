@@ -1,6 +1,9 @@
 from lib.container import Object, Weapon
 from lib.character import Player
 from lib.environment import Environment
+from lib.templates import EquipWeaponMenu
+
+import questionary
 
 player = Player("Collin")
 
@@ -48,6 +51,15 @@ Do you want to take it?""")
 def trees():
     tree_cluster.show_menu()
 
+@middle_meadow.command("Pick up knife in grass")
+def take_knife_in_grass():
+    print("You take the knife laying in the grass")
+    knife = Weapon("knife", 4)
+    player.give_item(knife)
+
+    middle_meadow.rm_command("Pick up knife in grass")
+    middle_meadow.show_menu(False)
+
 @middle_meadow.command("Quit")
 def exit_game():
     print("Thanks for playing!")
@@ -55,13 +67,12 @@ def exit_game():
 @tree_cluster.command("Take it")
 def take_it():
     print("You stuff the sword in your backpack")
-    sword = Weapon("rusty sword", 3)
+    sword = Weapon("rusty sword", 6)
     player.give_item(sword)
 
     tree_cluster.rm_command("Take it")
     tree_cluster.set_text("Now you're at the cluster of trees, where you picked up the sword")
     tree_cluster.show_menu()
-
 
 @tree_cluster.command("Turn back to the meadow")
 def dont_take_it():
@@ -75,6 +86,11 @@ def view_inventory():
 
 @Environment.global_command("HP")
 def view_hp():
-    print(f"HP: {player.calc_hp()}")
+    print(f"HP: {player.calc_hp()}/{player.max_hp}")
+
+@Environment.global_command("Equip Weapon")
+def equip_weapon():
+    menu = EquipWeaponMenu()
+    menu.show_menu(player)
 
 middle_meadow.show_menu()

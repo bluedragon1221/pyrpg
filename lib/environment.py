@@ -37,8 +37,8 @@ class Environment:
         else:
             raise Exception(f"There is no command with the name {trigger}")
 
-    def show_menu(self, intro=True):
-        if len(Environment.global_commands) != 0:
+    def show_menu(self, intro=True, show_global_commands=True):
+        if show_global_commands == True and (Environment.global_commands) != 0:
             def open_global_picker():
                 exec_picker(Environment.global_commands)
                 self.show_menu(False)

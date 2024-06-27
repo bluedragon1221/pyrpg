@@ -19,8 +19,8 @@ def enter_shop():
 
     shop_items = {club: 10, axe: 12}
 
-    weaponry = Shop("Collin's Weaponry", shop_items)
-    weaponry.start_shop(player)
+    weaponary = Shop("Collin's Weaponary", shop_items)
+    weaponary.start_shop(player)
 
     # return to flower patch after shop exits
     flower_patch.show_menu()
