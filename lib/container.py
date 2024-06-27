@@ -1,32 +1,34 @@
-from enum import Enum
 from typing import List, Iterator
 
-
-class ObjectType(Enum):
-    WEAPON = "weapon"
-    ITEM = "item"
-
-
-class Object(Enum):
-    def __init__(self, object_type: ObjectType, name: str):
-        self.object_type = object_type
+class Object:
+    def __init__(self, name: str, weight: int, price: int):
         self.name = name
+        self.weight = weight
+        self.description = ""
+        self.price = price
 
-    def get_name(self) -> str:
-        return self.name
+    def set_description(self, txt: str):
+        self.description = txt
+    
+    def get_description(self):
+        return self.description
 
-    @classmethod
-    def new_weapon(cls, name: str) -> "Object":
-        obj = cls(cls.WEAPON)
-        obj.name = name
-        return obj
 
-    @classmethod
-    def new_item(cls, name: str) -> "Object":
-        obj = cls(cls.ITEM)
-        obj.name = name
-        return obj
+class Weapon(Object):
+    def __init__(self, name: str, weight: int, price: int, damage: int):
+        super().__init__(name, weight, price)
+        self.damage = damage
 
+    def format(self):
+        return f"""    Name: {self.name}
+    Description: {self.description}
+    Price: {self.price}"""
+
+
+class Armor(Object):
+    def __init__(self, name: str, weight: int, price: int, ac: int):
+        super().__init__(name, weight, price)
+        self.ac_bonus = ac
 
 class Container:
     def __init__(self, name: str):
@@ -45,22 +47,3 @@ class Container:
     def extend(self, items: List[Object]) -> None:
         for item in items:
             self.add(item)
-
-
-class Player:
-    def __init__(self, name: str):
-        self.name = name
-        self.inventory = Container("inventory")
-        self.gold = 0
-
-    def get_inventory(self) -> Container:
-        return self.inventory
-
-    def give_item(self, item: Object) -> None:
-        self.inventory.add(item)
-
-    def remove_item(self, item: str) -> None:
-        self.inventory.remove(item)
-
-    def give_gold(self, amount: int) -> None:
-        self.gold += amount
