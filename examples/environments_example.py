@@ -3,8 +3,6 @@ from lib.character import Player
 from lib.environment import Environment
 from lib.templates import EquipWeaponMenu
 
-import questionary
-
 player = Player("Collin")
 
 middle_meadow = Environment("middle meadow")

@@ -1,6 +1,7 @@
-from typing import List, Iterator
-
 from random import randint
+from typing import Iterator
+from typing import List
+
 
 class Object:
     def __init__(self, name: str, count=1):
@@ -66,7 +67,7 @@ class Container:
         if item_name not in self.txt_list():
             raise Exception(f"{item_name} is not in {self.name}")
         else:
-            return [item for item in self.items if item.name == item_name][0]
+            return next(i for i in self.items if i.name == item_name)
 
     def add(self, item: Object) -> None:
         self.items.append(item)
@@ -78,6 +79,6 @@ class Container:
     def format(self):
         ret = f"{self.name}:\n"
         for i in self.items:
-            ret+=f"- {i.format()}\n"
+            ret += f"- {i.format()}\n"
 
         return ret

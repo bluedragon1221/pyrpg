@@ -1,25 +1,33 @@
+from typing import Callable
+from typing import ClassVar
+from typing import TypeAlias
+
 import questionary
-from typing import Dict, Callable
 
-def exec_picker(commands: Dict[str, Callable]):
-        choices = commands.keys()
-        action = questionary.select(
-            message="", choices=choices, instruction=" ", qmark="", pointer=">"
-        ).ask()
 
-        if not action:
-            raise Exception("Picker failed")
-        elif action in commands:
-            commands[action]()
-        else:
-            raise Exception(f"There is no command with the name {action}")
+CommandTable: TypeAlias = dict[str, Callable]
+
+
+def exec_picker(commands: CommandTable):
+    choices = commands.keys()
+    action = questionary.select(
+        message="", choices=choices, instruction=" ", qmark="", pointer=">"
+    ).ask()
+
+    if not action:
+        raise Exception("Picker failed")
+    elif action in commands:
+        commands[action]()
+    else:
+        raise Exception(f"There is no command with the name {action}")
+
 
 class Environment:
-    global_commands = {}
+    global_commands: ClassVar[CommandTable] = {}
 
     def __init__(self, name):
         self.name = name
-        self.commands = {}
+        self.commands: CommandTable = {}
         self.text = ""
 
     def command(self, trigger: str):
@@ -38,7 +46,8 @@ class Environment:
             raise Exception(f"There is no command with the name {trigger}")
 
     def show_menu(self, intro=True, show_global_commands=True):
-        if show_global_commands == True and (Environment.global_commands) != 0:
+        if show_global_commands and (Environment.global_commands) != 0:
+
             def open_global_picker():
                 exec_picker(Environment.global_commands)
                 self.show_menu(False)
@@ -46,7 +55,7 @@ class Environment:
             new_commands = self.commands | {"Command": open_global_picker}
         else:
             new_commands = self.commands
-        
+
         if intro:
             print(self.text)
         exec_picker(new_commands)

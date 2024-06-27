@@ -1,7 +1,9 @@
-from lib.shop import Shop
 from lib.character import Player
+from lib.container import Object
 from lib.container import Weapon
 from lib.environment import Environment
+from lib.templates import Shop
+
 
 player = Player("Collin")
 player.give_gold(200)
@@ -17,7 +19,7 @@ def enter_shop():
     axe = Weapon("Axe", 12)
     axe.set_description("It chops stuff")
 
-    shop_items = {club: 10, axe: 12}
+    shop_items: dict[Object, int] = {club: 10, axe: 12}
 
     weaponary = Shop("Collin's Weaponary", shop_items)
     weaponary.start_shop(player)

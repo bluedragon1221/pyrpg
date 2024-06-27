@@ -1,17 +1,15 @@
-from lib.environment import Environment
 from lib.character import Player
 from lib.container import Object
-from typing import Dict
+from lib.environment import Environment
 
 
 class Shop:
-    def __init__(self, name: str, items: Dict[Object, int]):
+    def __init__(self, name: str, items: dict[Object, int]):
         self.name = name
-        self.items: Dict[Object, int] = items
+        self.items: dict[Object, int] = items
         self.shop = Environment(self.name)
 
     def start_shop(self, player: Player):
-        print(self.items)
         self.shop.set_text(f"Welcome to {self.name}. What would you like to buy?")
 
         for item, price in self.items.items():
@@ -26,6 +24,7 @@ class Shop:
 
         self.shop.show_menu()
 
+    @staticmethod
     def buy_item(player, item, price):
         player.give_gold(-price)
         player.give_item(item)

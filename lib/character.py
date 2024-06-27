@@ -1,7 +1,10 @@
-from lib.container import Container, Object, Armor, Weapon
 from enum import Enum
-
 from random import randint
+
+from lib.container import Armor
+from lib.container import Container
+from lib.container import Object
+from lib.container import Weapon
 
 
 class Race(Enum):
@@ -19,13 +22,13 @@ class Race(Enum):
 
 class Character:
     def __init__(self, name: str, race: Race):
-        self.name = name
-        self.race = race
-        self.armor: Armor = None
-        self.holding: Weapon = None
-        self.max_hp = 9
-        self.hp = self.max_hp
-        self.level = 1
+        self.name: str = name
+        self.race: Race = race
+        self.armor: Armor | None = None
+        self.holding: Weapon | None = None
+        self.max_hp: int = 9
+        self.hp: int = self.max_hp
+        self.level: int = 1
 
     def level_up(self):
         self.level += 1
@@ -38,9 +41,9 @@ class Character:
         self.hp -= amount
 
     def deal_damage(self) -> int:
-        self.holding.roll_die() + self.level
-        
-    def calc_ac(self):
+        return self.holding.roll_die() + self.level
+
+    def calc_ac(self) -> int:
         ac_modifier = 0
         if self.level <= 3:
             ac_modifier = 1
@@ -49,28 +52,28 @@ class Character:
 
         return min(10 + ac_modifier + self.armor.ac_bonus, 20)
 
-    def calc_hp(self):
+    def calc_hp(self) -> int:
         return self.hp
 
-    def attack_roll(self):
-        randint(1, 20) + min(self.level, 10)
+    def attack_roll(self) -> int:
+        return randint(1, 20) + min(self.level, 10)
 
 
 class Player(Character):
     def __init__(self, name: str):
         super().__init__(name, Race.HUMAN)
-        self.inventory = Container("Inventory")
-        self.gold = 80
+        self.inventory: Container = Container("Inventory")
+        self.gold: int = 80
 
-    def give_item(self, item: Object) -> None:
+    def give_item(self, item: Object):
         self.inventory.add(item)
 
-    def give_gold(self, amount: int) -> None:
+    def give_gold(self, amount: int):
         self.gold += amount
 
     def equip_armor(self, armor: Armor):
         # remove item from slot
-        if not self.armor == None:
+        if self.armor is not None:
             self.inventory.add(self.armor)
             self.armor = None
 
@@ -82,7 +85,7 @@ class Player(Character):
 
     def equip_weapon(self, weapon: Weapon):
         # remove item from slot
-        if not self.holding == None:
+        if self.holding is not None:
             self.inventory.add(self.holding)
             self.holding = None
 

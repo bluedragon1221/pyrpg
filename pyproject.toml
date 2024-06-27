@@ -1,0 +1,7 @@
+[project]
+name = "pyrpg"
+dependencies = [
+    "questionary",
+    "beartype"
+]
+readme = "README.md"
