@@ -1,3 +1,5 @@
+"""classes for defining game objects, such as Weapons and Armor, as well as Containers to group them together"""
+
 from random import randint
 from typing import Iterator
 from typing import List
@@ -28,7 +30,7 @@ class Weapon(Object):
     def __init__(self, name: str, die: int):
         super().__init__(name)
         if die not in [1, 4, 6, 8, 10, 12, 20]:
-            raise Exception(f"{die} is not a valid die.")
+            raise AttributeError(f"{die} is not a valid die.")
         self.damage_die = die
 
     def roll_die(self):
@@ -59,13 +61,13 @@ class Container:
         new_list = [item for item in self.items if item != item_to_remove]
 
         if self.items == new_list:
-            raise Exception(f"{item_to_remove} is not in {self.name}")
+            raise AttributeError(f"{item_to_remove} is not in {self.name}")
         else:
             self.items = new_list
 
     def find(self, item_name: str) -> Object:
         if item_name not in self.txt_list():
-            raise Exception(f"{item_name} is not in {self.name}")
+            raise AttributeError(f"{item_name} is not in {self.name}")
         else:
             return next(i for i in self.items if i.name == item_name)
 

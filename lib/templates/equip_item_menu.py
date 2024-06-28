@@ -1,29 +1,30 @@
-# Some helper commands so that you don't have to write them yourself
+"""Some helper commands so that you don't have to write them yourself"""
+
 from lib.character import Player
 from lib.container import Weapon
 from lib.environment import Environment
 
 
 class EquipWeaponMenu:
-    def __init__(self):
+    def __init__(self, player: Player):
         self.environment = Environment("Equip Weapon Menu")
         self.environment.set_text("Select a weapon to equip")
-        self.no_entries_messages: str = "No weapons in inventory!"
+        self.player: Player = player
+        self.count = 0
 
-    @staticmethod
-    def make_menu_item(player: Player, item: Weapon):
-        return lambda: player.equip_weapon(item)
+    def make_menu_item(self, item: Weapon):
+        self.count += 1
+        return lambda: self.player.equip_weapon(item)
 
-    @staticmethod
-    def get_iterator(player: Player):
-        return [item for item in player.inventory if isinstance(item, Weapon)]
+    def show_menu(self):
+        self.environment.extend_commands(
+            {
+                item.name: self.make_menu_item(item)
+                for item in self.player.inventory
+                if isinstance(item, Weapon)
+            }
+        )
 
-    def show_menu(self, player: Player):
-        entry_count = 0
-        if entry_count > 0:
-            for item in self.get_iterator(player):
-                entry_count += 1
-                self.environment.add_command(f"{item.name}", self.make_menu_item(player, item))
-            self.environment.show_menu(show_global_commands=False)
-        else:
-            print(self.no_entries_messages)
+        self.environment.show_menu(
+            show_global_commands=False, err="No weapons in inventory!"
+        )

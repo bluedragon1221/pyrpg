@@ -1,3 +1,5 @@
+"""Classes for managing environments that the player might be in"""
+
 from typing import Callable
 from typing import ClassVar
 from typing import TypeAlias
@@ -15,14 +17,17 @@ def exec_picker(commands: CommandTable):
     ).ask()
 
     if not action:
-        raise Exception("Picker failed")
-    elif action in commands:
+        raise EOFError("Picker closed unexpectedly")
+
+    if action in commands:
         commands[action]()
     else:
-        raise Exception(f"There is no command with the name {action}")
+        raise AttributeError(f"There is no command with the name {action}")
 
 
 class Environment:
+    """An Environment is anywhere where the player can make a choice"""
+
     global_commands: ClassVar[CommandTable] = {}
 
     def __init__(self, name):
@@ -30,24 +35,32 @@ class Environment:
         self.commands: CommandTable = {}
         self.text = ""
 
+    def add_command(self, trigger: str, action):
+        self.commands[trigger] = action
+
     def command(self, trigger: str):
+        """helper decorator for add_command"""
+
         def decorator(func):
             self.add_command(trigger, func)
 
         return decorator
 
-    def add_command(self, trigger: str, action):
-        self.commands[trigger] = action
+    def extend_commands(self, commands: CommandTable):
+        if not isinstance(commands, CommandTable):
+            raise ValueError("That's not a valid command table. I can't append it")
+
+        self.commands |= commands
 
     def rm_command(self, trigger: str):
         if trigger in self.commands:
             del self.commands[trigger]
         else:
-            raise Exception(f"There is no command with the name {trigger}")
+            raise KeyError(f"There is no command with the name {trigger}")
 
-    def show_menu(self, intro=True, show_global_commands=True):
-        if show_global_commands and (Environment.global_commands) != 0:
-
+    def show_menu(self, intro=True, show_global_commands=True, err="You haven't added any commands to the environment yet"):
+        commands_len = len(self.commands)
+        if show_global_commands and len(Environment.global_commands) != 0:
             def open_global_picker():
                 exec_picker(Environment.global_commands)
                 self.show_menu(False)
@@ -58,7 +71,11 @@ class Environment:
 
         if intro:
             print(self.text)
-        exec_picker(new_commands)
+
+        if commands_len > 0:
+            exec_picker(new_commands)
+        else:
+            raise ValueError(err)
 
     def set_text(self, text: str):
         self.text = text
