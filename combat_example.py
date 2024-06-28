@@ -1,6 +1,6 @@
 from lib.character import Character, Player
 from lib.container import Weapon
-from lib.templates import Combat
+from lib.combat import Combat
 
 players_knife = Weapon("Knife", 4)
 enemy_sword = Weapon("Sword", 6)

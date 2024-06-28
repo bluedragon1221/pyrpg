@@ -30,10 +30,10 @@ class Environment:
 
     global_commands: ClassVar[CommandTable] = {}
 
-    def __init__(self, name):
+    def __init__(self, name, text=""):
         self.name = name
+        self.text = text
         self.commands: CommandTable = {}
-        self.text = ""
 
     def add_command(self, trigger: str, action):
         self.commands[trigger] = action
@@ -47,9 +47,6 @@ class Environment:
         return decorator
 
     def extend_commands(self, commands: CommandTable):
-        if not isinstance(commands, CommandTable):
-            raise ValueError("That's not a valid command table. I can't append it")
-
         self.commands |= commands
 
     def rm_command(self, trigger: str):
@@ -58,9 +55,15 @@ class Environment:
         else:
             raise KeyError(f"There is no command with the name {trigger}")
 
-    def show_menu(self, intro=True, show_global_commands=True, err="You haven't added any commands to the environment yet"):
+    def show_menu(
+        self,
+        intro=True,
+        show_global_commands=True,
+        err="You haven't added any commands to the environment yet",
+    ):
         commands_len = len(self.commands)
         if show_global_commands and len(Environment.global_commands) != 0:
+
             def open_global_picker():
                 exec_picker(Environment.global_commands)
                 self.show_menu(False)
@@ -75,13 +78,7 @@ class Environment:
         if commands_len > 0:
             exec_picker(new_commands)
         else:
-            raise ValueError(err)
-
-    def set_text(self, text: str):
-        self.text = text
-
-    def get_text(self):
-        return self.text
+            raise print(err)
 
     @staticmethod
     def add_global_command(trigger: str, action):

@@ -8,13 +8,21 @@ from lib.container import Object
 from lib.container import Weapon
 
 class Character:
+    """This class hold information about a Character.
+    a character doesn't have an inventory or gold"""
+
     def __init__(self, name: str, weapon=None):
         self.name: str = name
         self.armor: Armor | None = None
-        self.holding: Weapon | None = weapon
+        self.weapon: Weapon | None = weapon
         self.max_hp: int = 9
         self.hp: int = self.max_hp
         self.level: int = 1
+
+    def is_stealthy(self) -> bool:
+        if self.armor is not None:
+            return self.armor.is_stealthy
+        return True
 
     def level_up(self):
         """When the character levels up, increment level by 1, and HP by 1d8 + 1"""
@@ -28,7 +36,7 @@ class Character:
         self.hp -= amount
 
     def calc_damage(self) -> int:
-        return self.holding.roll_die() + self.level
+        return self.weapon.roll_die() + self.level
 
     def calc_ac(self) -> int:
         dex_modifier = 0
@@ -47,6 +55,8 @@ class Character:
 
 
 class Player(Character):
+    """This class holds information about the main player of your game.
+    It should not be used for NPCs or other in game characters, only the player"""
     def __init__(self, name: str):
         super().__init__(name)
         self.inventory: Container = Container("Inventory")
@@ -88,12 +98,30 @@ class Player(Character):
             ValueError: If weapon not in inventory
         """
         # move item from slot to inventory
-        if self.holding is not None:
-            self.inventory.add(self.holding)
-            self.holding = None
+        if self.weapon is not None:
+            self.inventory.add(self.weapon)
+            self.weapon = None
 
         if weapon in self.inventory:
             self.inventory.remove(weapon)
-            self.holding = weapon
+            self.weapon = weapon
         else:
             raise AttributeError(f"{weapon.name} is not in inventory")
+
+    def all_player_info(self):
+        # inventory
+        print(self.inventory.format())
+
+        # armor
+        if self.armor is not None:
+            print(f"Armor: {self.armor.name} (ac: {self.armor.ac_bonus})")
+
+        # weapon
+        if self.weapon is not None:
+            print(f"Weapon: {self.weapon.name} (dmg: d{self.weapon.damage_die}+{self.level})")
+
+        # HP
+        print(f"HP: {self.hp}/{self.max_hp}")
+
+        # AC
+        print(f"AC: {self.calc_ac()}")
