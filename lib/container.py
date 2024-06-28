@@ -6,7 +6,7 @@ from typing import List
 
 
 class Object:
-    def __init__(self, name: str, count=1, description=""):
+    def __init__(self, name: str, count: int=1, description: str=""):
         self.name = name
         self.description = description
         self.count = count
@@ -18,21 +18,21 @@ class Object:
 
 
 class Weapon(Object):
-    def __init__(self, name: str, die: int, count=1, description="", stealthy=False):
+    def __init__(self, name: str, die: int, count: int=1, description: str=""):
         super().__init__(name, count=count, description=description)
         if die not in [1, 4, 6, 8, 10, 12, 20]:
             raise AttributeError(f"{die} is not a valid die.")
         self.damage_die = die
-        self.is_stealthy = stealthy
 
     def roll_die(self):
         return randint(1, self.damage_die)
 
 
 class Armor(Object):
-    def __init__(self, name: str, ac: int, description=""):
+    def __init__(self, name: str, ac: int, description: str=""):
         super().__init__(name, description=description)
         self.ac_bonus = ac
+        self.is_stealthy = True
 
 
 class Container:

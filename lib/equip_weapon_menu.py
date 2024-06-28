@@ -17,12 +17,12 @@ def equip_weapon_menu(player: Player):
     def make_menu_item(item: Weapon):
         return lambda: player.equip_weapon(item)
 
-    environment.extend_commands(
-        {
-            item.name: make_menu_item(item)
-            for item in player.inventory
-            if isinstance(item, Weapon)
-        }
-    )
+    # fmt: off
+    environment.extend_commands({
+        item.name: make_menu_item(item)
+        for item in player.inventory
+        if isinstance(item, Weapon)
+    })
+    # fmt: on
 
     environment.show_menu(show_global_commands=False, err="No weapons in inventory!")

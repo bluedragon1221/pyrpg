@@ -11,10 +11,10 @@ class Character:
     """This class hold information about a Character.
     a character doesn't have an inventory or gold"""
 
-    def __init__(self, name: str, weapon=None):
+    def __init__(self, name: str, weapon: Weapon | None=None):
         self.name: str = name
         self.armor: Armor | None = None
-        self.weapon: Weapon | None = weapon
+        self.weapon = weapon
         self.max_hp: int = 9
         self.hp: int = self.max_hp
         self.level: int = 1
@@ -36,7 +36,11 @@ class Character:
         self.hp -= amount
 
     def calc_damage(self) -> int:
-        return self.weapon.roll_die() + self.level
+        if self.weapon is not None:
+            return self.weapon.roll_die() + self.level
+        else:
+            print("Character does not have a weapon equiped")
+            return 0
 
     def calc_ac(self) -> int:
         dex_modifier = 0
