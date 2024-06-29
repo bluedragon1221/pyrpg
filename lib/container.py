@@ -6,6 +6,7 @@ from typing import List
 
 
 class Object:
+    """An object holds a name, and description. It is a base class"""
     def __init__(self, name: str, count: int=1, description: str=""):
         self.name = name
         self.description = description
@@ -18,6 +19,7 @@ class Object:
 
 
 class Weapon(Object):
+    """Extends Object. Used for weapons (duh)"""
     def __init__(self, name: str, die: int, count: int=1, description: str=""):
         super().__init__(name, count=count, description=description)
         if die not in [1, 4, 6, 8, 10, 12, 20]:
@@ -29,6 +31,7 @@ class Weapon(Object):
 
 
 class Armor(Object):
+    """Extends Object. Used for armor (duh)"""
     def __init__(self, name: str, ac: int, description: str=""):
         super().__init__(name, description=description)
         self.ac_bonus = ac
@@ -36,6 +39,7 @@ class Armor(Object):
 
 
 class Container:
+    """A container holds a list of Objects, including Armor or Weapons"""
     def __init__(self, name: str):
         self.name = name
         self.items: List[Object] = []
@@ -68,11 +72,11 @@ class Container:
             self.add(item)
 
     def format(self):
-        if len(self.items) > 0:
-            ret = f"{self.name}:\n"
-            for i in self.items:
-                ret += f"- {i.format()}\n"
-
-            return ret
-        else:
+        if len(self.items) == 0:
             return f"{self.name} is empty!"
+
+        ret = f"{self.name}:\n"
+        for i in self.items:
+            ret += f"- {i.format()}\n"
+
+        return ret

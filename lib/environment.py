@@ -78,6 +78,7 @@ class Environment:
         else:
             print(err)
 
+    # --- Global Commands
     @staticmethod
     def add_global_command(trigger: str, action: Action):
         Environment.global_commands[trigger] = action

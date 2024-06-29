@@ -20,9 +20,9 @@ class Character:
         self.level: int = 1
 
     def is_stealthy(self) -> bool:
-        if self.armor is not None:
-            return self.armor.is_stealthy
-        return True
+        if self.armor is None:
+            return True
+        return self.armor.is_stealthy
 
     def level_up(self):
         """When the character levels up, increment level by 1, and HP by 1d8 + 1"""
@@ -35,21 +35,17 @@ class Character:
     def take_damage(self, amount: int):
         self.hp -= amount
 
-    def calc_damage(self) -> int:
-        if self.weapon is not None:
-            return self.weapon.roll_die() + self.level
-        else:
+    def roll_damage(self) -> int:
+        if self.weapon is None:
             print("Character does not have a weapon equiped")
             return 0
+        return self.weapon.roll_die() + self.level
 
     def calc_ac(self) -> int:
-        dex_modifier = 0
-        if self.level <= 3:
-            dex_modifier = 1
-        elif self.level:
-            dex_modifier = 2
+        dex_modifier = 2 if self.level >= 4 else 1
+        ac_bonus = self.armor.ac_bonus if (self.armor is not None) else 0
 
-        return min(10 + dex_modifier + (self.armor.ac_bonus if (self.armor is not None) else 0), 20)
+        return min(10 + dex_modifier + ac_bonus, 20)
 
     def calc_hp(self) -> int:
         return self.hp
@@ -61,6 +57,7 @@ class Character:
 class Player(Character):
     """This class holds information about the main player of your game.
     It should not be used for NPCs or other in game characters, only the player"""
+
     def __init__(self, name: str):
         super().__init__(name)
         self.inventory: Container = Container("Inventory")
