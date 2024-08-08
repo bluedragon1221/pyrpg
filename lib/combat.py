@@ -14,6 +14,15 @@ class Combat:
         self.player: Player = player
         self.enemy: Character = enemy
 
+        # player turn env needs to persist
+        self.player_turn_env: Environment = Environment("Player Options")
+        self.player_turn_env.extend_commands({
+            "Attack": self.player_attack,
+            "Switch Weapon": lambda: equip_weapon_menu(self.player),
+            "Move": self.player_move,
+            "End Turn": self.player_end_turn
+        })
+
     def player_attack(self):
         attack_roll = self.player.attack_roll()
         if attack_roll >= self.enemy.calc_ac():
@@ -22,23 +31,22 @@ class Combat:
             self.enemy.take_damage(damage)
         else:
             print(f"You rolled {attack_roll} and missed.")
+        
+        self.player_turn_env.show_menu()
+
+    def player_end_turn(self):
+        if self.enemy.hp > 0:
+            print(f"{self.enemy.name} died. You won!")
+            return None
+        self.player_turn_env.restore_commands()
+        self.enemy_turn()
+
+    def player_move(self):
+        self.player_turn_env.show_menu()
+        self.player_turn_env.hide_command("Move")
 
     def player_turn(self):
-        player_options_env = Environment("Player Options")
-
-        # fmt: off
-        player_options_env.extend_commands({
-            "Attack": self.player_attack,
-            "Switch Weapon": lambda: equip_weapon_menu(self.player)
-        })
-        # fmt: on
-
-        player_options_env.show_menu()
-
-        if self.enemy.hp <= 0:
-            print(f"{self.enemy.name} died. You won!")
-        else:
-            self.enemy_turn()
+        self.player_turn_env.show_menu()
 
     def enemy_turn(self):
         sleep(0.7)
